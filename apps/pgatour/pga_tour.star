@@ -45,6 +45,9 @@ Changed tee times feature to only display them when the leader's time is less th
 
 v2.5
 Updated Tournament IDs for 2024 Season
+
+v2.5.1
+Fixed bug regarding completed round scores
 """
 
 load("encoding/json.star", "json")
@@ -350,7 +353,7 @@ def getPlayerProgress(x, s, t, Title, TitleColor, ColorGradient, stage, state, t
                         TeeTime = TeeTimeFormat.format("15:04")
                         ProgressStr = TeeTime
                     else:
-                        RoundNumber = len(t[0]["linescores"]) - 2
+                        RoundNumber = len(t[i + x]["linescores"]) - 1
                         for i in range(0, len(t), 1):
                             if playerID == t[i]["id"]:
                                 RoundScore = t[i]["linescores"][RoundNumber]["value"]
@@ -368,15 +371,16 @@ def getPlayerProgress(x, s, t, Title, TitleColor, ColorGradient, stage, state, t
 
             # if the player's round is completed, show their score
             if playerState == "post":
-                RoundNumber = len(t[0]["linescores"]) - 2
-                for i in range(0, len(t), 1):
-                    if playerID == t[i]["id"]:
-                        RoundScore = t[i]["linescores"][RoundNumber]["value"]
+                RoundNumber = len(t[i + x]["linescores"]) - 1
+                for z in range(0, len(t), 1):
+                    if playerID == t[z]["id"]:
+                        RoundScore = t[z]["linescores"][RoundNumber]["value"]
                         ProgressStr = str(int(RoundScore))
 
             # If ColorGradient is selected...
             # Players who have completed their round are shown in white, in progress rounds are in dark yellow/orange which slowly transitions to white as the round progresses.
             # Otherwise in progress is a single shade of yellow
+
             playerFontColor = getPlayerFontColor(HolesCompleted, ColorGradient)
 
             # show condensed player names (down to 10 due to potential tee time being shown, so need more room) and how many holes they've played
